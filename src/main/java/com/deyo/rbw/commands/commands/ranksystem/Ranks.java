@@ -54,7 +54,8 @@ implements ServerCommand {
     @NotNull
     private static String getString(Rank rank, Role role) {
         String formattedStartingelo = rank.getStartingElo() < 1 ? "**Under " + rank.getEndingElo() + "**" : (rank.getEndingElo() == 9999 ? "**" + rank.getStartingElo() + "+**" : "**" + rank.getStartingElo() + "**");
-        String str = formattedStartingelo + " " + role.getAsMention() + "  W:(+" + rank.getWinElo() + ") L:(-" + rank.getLoseElo() + ")  MVP: (+" + rank.getMvpElo() + ") BED: (+" + rank.getBedElo() + ")";
+        String roleMention = (role != null) ? role.getAsMention() : "`[MISSING ROLE:" + rank.getId() + "]`";
+        String str = formattedStartingelo + " " + roleMention + "  W:(+" + rank.getWinElo() + ") L:(-" + rank.getLoseElo() + ")  MVP: (+" + rank.getMvpElo() + ") BED: (+" + rank.getBedElo() + ")";
         if (rank.getDecay() != -1) {
             str = str + " (Decay: -" + rank.getDecay() + ")";
         }

@@ -158,23 +158,27 @@ public class Player {
                 ArrayList<Role> rolestoadd = new ArrayList<Role>();
                 String name = Player.getName(ID2);
                 int elo = (int)Statistic.ELO.getForPlayer(ID2);
-                rolestoadd.add(RBW.registeredRole);
                 Member m3 = g2.getMemberById(ID2);
                 for (Rank rank : Rank.getRanks()) {
                     int startingElo = rank.getStartingElo();
                     int endingElo = rank.getEndingElo();
                     String s2 = rank.getId();
                     if (elo < startingElo || elo > endingElo) continue;
-                    rolestoadd.add(g2.getRoleById(s2));
+                    Role roleToAdd = g2.getRoleById(s2);
+                    if (roleToAdd != null) rolestoadd.add(roleToAdd);
                     for (Rank rank2 : Rank.getRanks()) {
                         if (rank2.getId().equals(s2)) continue;
-                        rolestoremove.add(g2.getRoleById(rank2.getId()));
+                        Role roleToRemove = g2.getRoleById(rank2.getId());
+                        if (roleToRemove != null) rolestoremove.add(roleToRemove);
                     }
                 }
                 if (Player.isBanned(ID2)) {
                     rolestoadd.add(RBW.bannedRole);
                 } else {
                     rolestoremove.add(RBW.bannedRole);
+                }
+                if (RBW.registeredRole != null) {
+                    rolestoadd.add(RBW.registeredRole);
                 }
                 if (m3 == null) break block14;
                 g2.modifyMemberRoles(m3, rolestoadd, rolestoremove).queue();

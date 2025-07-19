@@ -65,8 +65,8 @@ import org.bukkit.plugin.Plugin;
 public class Game {
     public static ArrayList<Game> games = new ArrayList<>();
     public final int gamenumber;
-    private final GameStoring storing;
-    private final YamlConfiguration config;
+    private transient final GameStoring storing;
+    private transient final YamlConfiguration config;
     private byte retries = 0;
     byte maxRetries = (byte)4;
 
