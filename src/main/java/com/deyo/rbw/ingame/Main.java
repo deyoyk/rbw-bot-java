@@ -40,7 +40,7 @@ extends JavaPlugin {
     public void onEnable() {
         super.onEnable();
         instance = this;
-        serverIp = "zrbw.fun";
+        serverIp = "grbw.fun";
         com.deyo.rbw.Main.main(new String[0]);
         this.getCommand("link").setExecutor((CommandExecutor)new com.deyo.rbw.ingame.commands.LinkCommand());
         this.getCommand("guild").setExecutor((CommandExecutor)new com.deyo.rbw.ingame.commands.GuildCommand());
