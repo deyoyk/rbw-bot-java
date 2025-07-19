@@ -159,23 +159,23 @@ public class Player {
                 String name = Player.getName(ID2);
                 int elo = (int)Statistic.ELO.getForPlayer(ID2);
                 Member m3 = g2.getMemberById(ID2);
+                // Add the correct rank role based on elo
+                Rank playerRank = Rank.getPlayerRank(ID2);
+                if (playerRank != null) {
+                    Role rankRole = g2.getRoleById(playerRank.getId());
+                    if (rankRole != null) rolestoadd.add(rankRole);
+                }
+                // Remove all other rank roles
                 for (Rank rank : Rank.getRanks()) {
-                    int startingElo = rank.getStartingElo();
-                    int endingElo = rank.getEndingElo();
-                    String s2 = rank.getId();
-                    if (elo < startingElo || elo > endingElo) continue;
-                    Role roleToAdd = g2.getRoleById(s2);
-                    if (roleToAdd != null) rolestoadd.add(roleToAdd);
-                    for (Rank rank2 : Rank.getRanks()) {
-                        if (rank2.getId().equals(s2)) continue;
-                        Role roleToRemove = g2.getRoleById(rank2.getId());
+                    if (playerRank == null || !rank.getId().equals(playerRank.getId())) {
+                        Role roleToRemove = g2.getRoleById(rank.getId());
                         if (roleToRemove != null) rolestoremove.add(roleToRemove);
                     }
                 }
                 if (Player.isBanned(ID2)) {
-                    rolestoadd.add(RBW.bannedRole);
+                    if (RBW.bannedRole != null) rolestoadd.add(RBW.bannedRole);
                 } else {
-                    rolestoremove.add(RBW.bannedRole);
+                    if (RBW.bannedRole != null) rolestoremove.add(RBW.bannedRole);
                 }
                 if (RBW.registeredRole != null) {
                     rolestoadd.add(RBW.registeredRole);
