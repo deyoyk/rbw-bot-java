@@ -1,0 +1,12 @@
+name: RBWBott
+main: com.deyo.rbw.ingame.Main
+version: 1.5.0
+author: deyo
+description: Ranked BedWars Discord/Bukkit Integration
+commands:
+  link:
+    description: Main command for Ranked BedWars
+    usage: /rbw
+  guild:
+    description: Guild system command
+    usage: /guild

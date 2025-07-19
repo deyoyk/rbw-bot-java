@@ -1,0 +1,34 @@
+game-started: You can't pick, The game already started
+not-captain: You aren't captain
+picked-yourself: You can't pick yourself..
+queue-invalid-players: Specify a valid number for the PLAYERS-PER-TEAM in this queue.
+queue-already-exists: This queue already exists..
+queue-invalid-mode: Specify a valid mode for the queue (automatic or captains).
+queue-casual: Specify if the queue is casual (true or false)
+queue-deleted: The queue was successfully deleted
+player-not-banned: This player is not currently banned.
+rank-deleted: Rank successfully deleted
+rank-doesnt-exist: This rank does not exist.
+no-ranks: There are no ranks set up.
+not-submitted: This game was not submitted.
+casual-game: This game is casual, You can't submit.
+not-scored: This game was not scored.
+successfully-wiped: Player successfully wiped.
+ss-self: You can't screenshare yourself.
+theme-already-exists: This theme already exists.
+invalid-time-format: The time you specified is invalid.
+already-banned: This player is already banned.
+successfully-registered: Successfully registered to the server.
+ign-too-short: The specified name is too short (min 3 characters)
+ign-too-long: The specified name is too long (max 16 characters)
+already-registered: Player already registered.
+not-game-channel: This is not a game channel.
+invalid-queue: Please provide a valid queue.
+invalid-game: Couldn't find any game with that gamenumber.
+invalid-vc: The specified VC is invalid.
+invalid-role: The specified Role is invalid
+invalid-player: Couldn't find that player (Wrong ID?)
+wrong-usage: 'Usage: %usage%'
+no-perms: You don't have permission to run this command
+not-registered: You are not registered.
+command-not-found: Command not found.
