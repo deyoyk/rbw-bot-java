@@ -216,7 +216,11 @@ extends ListenerAdapter {
         if (message.getEmbeds().get(0).getTitle().equals("Error")) {
             return;
         }
-        int page = Integer.parseInt(message.getEmbeds().get(0).getFooter().getText().split(":")[1].trim());
+        String[] footerSplit = message.getEmbeds().get(0).getFooter().getText().split(":");
+        int page = 1;
+        if (footerSplit.length > 1) {
+            page = Integer.parseInt(footerSplit[1].trim());
+        }
         ++page;
         String stat = message.getEmbeds().get(0).getTitle().split(" ")[0].trim().toLowerCase();
         DecimalFormat formatter = new DecimalFormat("#0");
