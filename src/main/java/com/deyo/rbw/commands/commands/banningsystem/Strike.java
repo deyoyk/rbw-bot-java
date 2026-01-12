@@ -25,6 +25,7 @@ import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
 public class Strike
 implements ServerCommand {
     public static HashMap<String, String> pendingStrikes = new HashMap<String, String>();
+    
     @Override
     public void doCMD(String[] args2, Guild g2, Member m3, MessageChannelUnion c, CommandAdapter msg, String usage) {
         if (args2.length >= 3) {
