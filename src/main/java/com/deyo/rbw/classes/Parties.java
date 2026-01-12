@@ -93,6 +93,7 @@ public class Parties {
             expirations.put(PartyOwner, System.currentTimeMillis());
         } else {
             parties.put(PartyOwner, members);
+            expirations.put(PartyOwner, System.currentTimeMillis());
         }
     }
 

@@ -4,6 +4,7 @@
 package com.deyo.rbw.commands.commands.banningsystem;
 
 import java.io.IOException;
+import java.util.HashMap;
 
 import com.deyo.rbw.childclasses.BetterEmbed;
 import com.deyo.rbw.childclasses.CommandAdapter;
@@ -23,6 +24,7 @@ import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
 
 public class Strike
 implements ServerCommand {
+    public static HashMap<String, String> pendingStrikes = new HashMap<String, String>();
     @Override
     public void doCMD(String[] args2, Guild g2, Member m3, MessageChannelUnion c, CommandAdapter msg, String usage) {
         if (args2.length >= 3) {
@@ -33,11 +35,12 @@ implements ServerCommand {
                 return;
             }
             String reasonPreview = String.join(" ", java.util.Arrays.copyOfRange(args2, 2, args2.length));
+            String strikeKey = targetMember.getId() + ":" + m3.getId();
+            pendingStrikes.put(strikeKey, reasonPreview);
             BetterEmbed confirm = BetterEmbed.warning("Confirm Strike", "Are you sure you want to issue a strike to **" + targetMember.getEffectiveName() + "** for: *" + reasonPreview + "* ?");
             var confirmBtn = net.dv8tion.jda.api.interactions.components.buttons.Button.success("confirmStrike:" + targetMember.getId() + ":" + m3.getId(), "Yes");
             var cancelBtn  = net.dv8tion.jda.api.interactions.components.buttons.Button.danger("cancelStrike:" + targetMember.getId() + ":" + m3.getId(), "No");
             confirm.replyWithButtons(java.util.List.of(confirmBtn, cancelBtn), msg);
-            // Actual execution happens in ConfirmStrikeListener
             return;
         } else {
             BetterEmbed error = new BetterEmbed("error", "", "", Messages.WRONG_USAGE.get().replaceAll("%usage%", usage), "");

@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.Role;
@@ -34,6 +35,7 @@ import com.deyo.rbw.classes.Utils;
 import com.deyo.rbw.classes.player.Player;
 import com.deyo.rbw.classes.screenshare.ScreenShare;
 import com.deyo.rbw.commands.CommandManager;
+import com.deyo.rbw.commands.commands.banningsystem.Strike;
 import com.deyo.rbw.commands.commands.gamesystem.Games;
 import com.deyo.rbw.commands.commands.player.guild.GuildJoin;
 import com.deyo.rbw.commands.commands.player.party.PartyJoin;
@@ -110,6 +112,57 @@ extends ListenerAdapter {
         } else if (event.getButton().getId().equals("accept-" + event.getMember().getId())) {
             event.getChannel().sendMessage(event.getMember().getAsMention()).queue();
             PartyJoin.execute(new String[]{"=party", "join"}, event.getGuild(), event.getMember(), event.getChannel(), new CommandAdapter(event.getMessage()), "");
+        } else if (event.getButton().getId().startsWith("confirmStrike:")) {
+            if (!CommandManager.hasGroup("staff", event.getMember(), event.getGuild())) {
+                return;
+            }
+            String[] parts = event.getButton().getId().split(":");
+            if (parts.length < 3) {
+                return;
+            }
+            String targetId = parts[1];
+            String strikerId = parts[2];
+            if (!strikerId.equals(event.getMember().getId())) {
+                return;
+            }
+            String strikeKey = targetId + ":" + strikerId;
+            String reason = Strike.pendingStrikes.get(strikeKey);
+            if (reason == null) {
+                BetterEmbed error = new BetterEmbed("error", "Error", "", "Strike confirmation expired or invalid.", "");
+                event.getMessage().editMessageEmbeds(error.build()).setComponents().queue();
+                return;
+            }
+            try {
+                Member targetMember = event.getGuild().getMemberById(targetId);
+                if (targetMember == null) {
+                    BetterEmbed error = new BetterEmbed("error", "Error", "", "Target member not found.", "");
+                    event.getMessage().editMessageEmbeds(error.build()).setComponents().queue();
+                    return;
+                }
+                Strike.strike(targetId, event.getGuild(), event.getMember(), targetMember, reason, new CommandAdapter(event.getMessage()));
+                Strike.pendingStrikes.remove(strikeKey);
+                event.getMessage().editMessage("✅ Strike confirmed and issued.").setComponents().queue();
+            } catch (Exception e) {
+                e.printStackTrace();
+                BetterEmbed error = new BetterEmbed("error", "Error", "", "Failed to issue strike: " + e.getMessage(), "");
+                event.getMessage().editMessageEmbeds(error.build()).setComponents().queue();
+            }
+        } else if (event.getButton().getId().startsWith("cancelStrike:")) {
+            if (!CommandManager.hasGroup("staff", event.getMember(), event.getGuild())) {
+                return;
+            }
+            String[] parts = event.getButton().getId().split(":");
+            if (parts.length < 3) {
+                return;
+            }
+            String targetId = parts[1];
+            String strikerId = parts[2];
+            if (!strikerId.equals(event.getMember().getId())) {
+                return;
+            }
+            String strikeKey = targetId + ":" + strikerId;
+            Strike.pendingStrikes.remove(strikeKey);
+            event.getMessage().editMessage("❌ Strike cancelled.").setComponents().queue();
         } else if (event.getButton().getId().contains("Accept-SS::")) {
             if (!CommandManager.hasGroup("staff", event.getMember(), event.getGuild())) {
                 return;
@@ -163,24 +216,52 @@ extends ListenerAdapter {
         if (message.getEmbeds().get(0).getTitle().equals("Error")) {
             return;
         }
-        int page = Integer.parseInt(message.getEmbeds().get(0).getFooter().getText().split(":")[1].trim());
+        String footerText = message.getEmbeds().get(0).getFooter().getText();
+        int page = 1;
+        try {
+            if (footerText.contains("**")) {
+                String pageStr = footerText.replaceAll(".*\\*\\*", "").replaceAll("\\*\\*.*", "");
+                page = Integer.parseInt(pageStr.trim());
+            } else if (footerText.contains(":")) {
+                page = Integer.parseInt(footerText.split(":")[1].trim());
+            }
+        } catch (Exception ex) {
+            page = 1;
+        }
         if (page != 1) {
             --page;
-            String stat = message.getEmbeds().get(0).getTitle().split(" ")[0].trim().toLowerCase();
+            String title = message.getEmbeds().get(0).getTitle();
+            String stat = "";
+            if (title.contains("Leaderboard")) {
+                String beforeLeaderboard = title.split("Leaderboard")[0].trim();
+                String[] parts = beforeLeaderboard.split("\\s+");
+                if (parts.length > 0) {
+                    stat = parts[parts.length - 1].toLowerCase();
+                }
+            }
+            if (stat.isEmpty()) {
+                String[] titleParts = title.split("\\s+");
+                if (titleParts.length > 0) {
+                    stat = titleParts[0].trim().toLowerCase();
+                }
+            }
             DecimalFormat formatter = new DecimalFormat("#0");
             List<Map.Entry<String, Double>> list = ButtonsEvent.getList(stat);
-            if (stat.equals("wlr")) {
+            if (list == null) {
+                return;
+            }
+            if (stat.equals("wlr") || stat.equals("kdr")) {
                 formatter = new DecimalFormat("#0.00");
             }
-            if (page * 10 < list.size() + 10) {
+            if ((page - 1) * 10 < list.size() && page > 0) {
                 Object lb = "";
-                for (int i = page * 10 - 10; i < page * 10; ++i) {
+                for (int i = (page - 1) * 10; i < page * 10; ++i) {
                     if (i >= list.size()) continue;
                     String[] values2 = list.get(i).toString().split("=");
                     int place = i + 1;
                     lb = place == 1 ? (String)lb + ":first_place: `" + Player.getName(values2[0]) + "` \u2014 " + formatter.format(Double.parseDouble(values2[1])) + "\n" : (place == 2 ? (String)lb + ":second_place: `" + Player.getName(values2[0]) + "` \u2014 " + formatter.format(Double.parseDouble(values2[1])) + "\n" : (place == 3 ? (String)lb + ":third_place: `" + Player.getName(values2[0]) + "` \u2014 " + formatter.format(Double.parseDouble(values2[1])) + "\n" : (String)lb + "**#" + place + "** `" + Player.getName(values2[0]) + "` \u2014 " + formatter.format(Double.parseDouble(values2[1])) + "\n"));
                 }
-                BetterEmbed embed = new BetterEmbed("default", Utils.formatName(stat) + " Leaderboard", "", (String)lb, "Page: " + page);
+                BetterEmbed embed = new BetterEmbed("info", "\uD83C\uDFC6  " + Utils.formatName(stat) + " Leaderboard", "", (String)lb, "Page **" + page + "**");
                 ((MessageEditAction)message.editMessageEmbeds(embed.build()).setActionRow(ButtonsEvent.buttons(ID2))).queue();
             } else {
                 final MessageEmbed eb = message.getEmbeds().get(0);
@@ -216,27 +297,51 @@ extends ListenerAdapter {
         if (message.getEmbeds().get(0).getTitle().equals("Error")) {
             return;
         }
-        String[] footerSplit = message.getEmbeds().get(0).getFooter().getText().split(":");
+        String footerText = message.getEmbeds().get(0).getFooter().getText();
         int page = 1;
-        if (footerSplit.length > 1) {
-            page = Integer.parseInt(footerSplit[1].trim());
+        try {
+            if (footerText.contains("**")) {
+                String pageStr = footerText.replaceAll(".*\\*\\*", "").replaceAll("\\*\\*.*", "");
+                page = Integer.parseInt(pageStr.trim());
+            } else if (footerText.contains(":")) {
+                page = Integer.parseInt(footerText.split(":")[1].trim());
+            }
+        } catch (Exception ex) {
+            page = 1;
         }
         ++page;
-        String stat = message.getEmbeds().get(0).getTitle().split(" ")[0].trim().toLowerCase();
+        String title = message.getEmbeds().get(0).getTitle();
+        String stat = "";
+        if (title.contains("Leaderboard")) {
+            String beforeLeaderboard = title.split("Leaderboard")[0].trim();
+            String[] parts = beforeLeaderboard.split("\\s+");
+            if (parts.length > 0) {
+                stat = parts[parts.length - 1].toLowerCase();
+            }
+        }
+        if (stat.isEmpty()) {
+            String[] titleParts = title.split("\\s+");
+            if (titleParts.length > 0) {
+                stat = titleParts[0].trim().toLowerCase();
+            }
+        }
         DecimalFormat formatter = new DecimalFormat("#0");
         List<Map.Entry<String, Double>> list = ButtonsEvent.getList(stat);
-        if (stat.equals("wlr")) {
+        if (list == null) {
+            return;
+        }
+        if (stat.equals("wlr") || stat.equals("kdr")) {
             formatter = new DecimalFormat("#0.00");
         }
-        if (page * 10 < list.size() + 10 && page != 0) {
+        if ((page - 1) * 10 < list.size() && page > 0) {
             Object lb = "";
-            for (int i = page * 10 - 10; i < page * 10; ++i) {
+            for (int i = (page - 1) * 10; i < page * 10; ++i) {
                 if (i >= list.size()) continue;
                 String[] values2 = list.get(i).toString().split("=");
                 int place = i + 1;
                 lb = place == 1 ? (String)lb + ":first_place: `" + Player.getName(values2[0]) + "` \u2014 " + formatter.format(Double.parseDouble(values2[1])) + "\n" : (place == 2 ? (String)lb + ":second_place: `" + Player.getName(values2[0]) + "` \u2014 " + formatter.format(Double.parseDouble(values2[1])) + "\n" : (place == 3 ? (String)lb + ":third_place: `" + Player.getName(values2[0]) + "` \u2014 " + formatter.format(Double.parseDouble(values2[1])) + "\n" : (String)lb + "**#" + place + "** `" + Player.getName(values2[0]) + "` \u2014 " + formatter.format(Double.parseDouble(values2[1])) + "\n"));
             }
-            BetterEmbed embed = new BetterEmbed("default", Utils.formatName(stat) + " Leaderboard", "", (String)lb, "Page: " + page);
+            BetterEmbed embed = new BetterEmbed("info", "\uD83C\uDFC6  " + Utils.formatName(stat) + " Leaderboard", "", (String)lb, "Page **" + page + "**");
             ((MessageEditAction)message.editMessageEmbeds(embed.build()).setActionRow(ButtonsEvent.buttons(ID2))).queue();
         } else {
             final MessageEmbed eb = message.getEmbeds().get(0);

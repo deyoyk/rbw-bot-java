@@ -14,6 +14,9 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
@@ -53,6 +56,8 @@ public class Main {
     public static JDA jda;
     public static String version;
     public static boolean lessCpu;
+    public static boolean valid;
+    private static ScheduledExecutorService licenseScheduler;
 
     public static void runTaskLater(final Runnable task, long time) {
         // Always run async to avoid blocking main thread
@@ -70,6 +75,7 @@ public class Main {
         Runtime.getRuntime().addShutdownHook(new Thread(Main::onDisable));
         System.setProperty("http.agent", "Chrome");
         try {
+            Config.loadConfig();
             new File("RBW/players").mkdirs();
             new File("RBW/ranks").mkdirs();
             new File("RBW/bans").mkdirs();
@@ -80,7 +86,6 @@ public class Main {
             new File("RBW/maps").mkdirs();
             new File("RBW/guilds").mkdirs();
             new File("RBW/screenshares").mkdirs();
-            Config.loadConfig();
             Perms.loadPerms();
             Msg.loadMsg();
             Player.loadPlayers();
@@ -180,7 +185,37 @@ public class Main {
         }).start();
     }
 
+    public static void setupHeartbeatScheduler(String licenseKey) {
+        licenseScheduler = Executors.newSingleThreadScheduledExecutor(r -> {
+            Thread t = new Thread(r, "License-Heartbeat");
+            t.setDaemon(true);
+            return t;
+        });
+        
+        licenseScheduler.scheduleAtFixedRate(() -> {
+            try {
+                License.sendHeartbeat(licenseKey);
+            } catch (Exception e) {
+            }
+        }, 15, 15, TimeUnit.MINUTES);
+        
+        System.out.println("[License] Heartbeat scheduler configured to send requests every 15 minutes");
+    }
+
     public static void onDisable() {
+        if (licenseScheduler != null && !licenseScheduler.isShutdown()) {
+            System.out.println("[License] Shutting down heartbeat scheduler...");
+            licenseScheduler.shutdown();
+            try {
+                if (!licenseScheduler.awaitTermination(5, TimeUnit.SECONDS)) {
+                    licenseScheduler.shutdownNow();
+                }
+            } catch (InterruptedException e) {
+                licenseScheduler.shutdownNow();
+                Thread.currentThread().interrupt();
+            }
+            System.out.println("[License] Heartbeat scheduler stopped");
+        }
         Main.saveData();
         System.out.println("[RBW] Plugin has been disabled!");
     }

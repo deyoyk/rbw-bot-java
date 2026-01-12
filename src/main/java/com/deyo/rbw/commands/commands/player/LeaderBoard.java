@@ -137,7 +137,7 @@ implements ServerCommand {
                 BetterEmbed.replyStats(stream.toByteArray(), Player.getName(m3.getId()) + ".png", msg);
             } else {
                 Object lb = "";
-                for (int i = page - 1; i < 10; ++i) {
+                for (int i = (page - 1) * 10; i < page * 10; ++i) {
                     if (i >= list.size()) continue;
                     String[] values3 = ((Map.Entry)list.get(i)).toString().split("=");
                     int place = i + 1;

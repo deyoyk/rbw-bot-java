@@ -77,6 +77,7 @@ com\deyo\rbw\ingame\PINHandling.class
 com\deyo\rbw\classes\screenshare\ScreenShare.class
 com\deyo\rbw\commands\commands\player\guild\GuildJoin.class
 com\deyo\rbw\commands\commands\Help.class
+com\deyo\rbw\License.class
 com\deyo\rbw\util\AtomicFileUtil.class
 com\deyo\rbw\classes\Themes.class
 com\deyo\rbw\commands\commands\admin\SetQueueFile.class
