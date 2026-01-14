@@ -41,9 +41,13 @@ extends JavaPlugin {
     public void onEnable() {
         super.onEnable();
         instance = this;
-        serverIp = "grbw.fun";
         
         Config.loadConfig();
+        serverIp = Config.getValue("server-ip");
+        if (serverIp == null || serverIp.trim().isEmpty()) {
+            serverIp = "server-ip not set on config.yml";
+        }
+
         String licenseKey = Config.getValue("license-key");
         
         if (licenseKey == null || licenseKey.trim().isEmpty()) {

@@ -215,6 +215,7 @@ public class Player {
     public static void wipe(String ID2) {
         try {
             PlayerStoring pa = players.get(ID2);
+            if (pa == null) return;
             for (Statistic value : Statistic.values()) {
                 if (value == Statistic.ELO || value == Statistic.PEAKELO) {
                     value.setForPlayer(ID2, Integer.parseInt(Config.getValue("starting-elo")));
@@ -236,48 +237,74 @@ public class Player {
     }
 
     public static String getNick(String ID2) {
-        return players.get(ID2).getConfig().getString("nick", "");
+        PlayerStoring player = players.get(ID2);
+        if (player == null) return "";
+        return player.getConfig().getString("nick", "");
     }
 
     public static String getName(String ID2) {
-        return players.get(ID2).getConfig().getString("name");
+        PlayerStoring player = players.get(ID2);
+        if (player == null) return null;
+        return player.getConfig().getString("name");
     }
 
     public static String getTheme(String ID2) {
-        return players.get(ID2).getConfig().getString("theme");
+        PlayerStoring player = players.get(ID2);
+        if (player == null) return null;
+        return player.getConfig().getString("theme");
     }
 
     public static String getOwnedThemes(String ID2) {
-        return players.get(ID2).getConfig().getString("owned-themes");
+        PlayerStoring player = players.get(ID2);
+        if (player == null) return null;
+        return player.getConfig().getString("owned-themes");
     }
 
     public static void setName(String ID2, String newName) {
-        idByName.remove(Player.getName(ID2));
-        players.get(ID2).getConfig().set("name", newName);
-        idByName.put(newName, ID2);
-        if (Main.lessCpu) {
-            playersCache.remove(ID2);
+        String oldName = Player.getName(ID2);
+        if (oldName != null) {
+            idByName.remove(oldName);
+        }
+        PlayerStoring player = players.get(ID2);
+        if (player != null) {
+            player.getConfig().set("name", newName);
+            idByName.put(newName, ID2);
+            if (Main.lessCpu) {
+                playersCache.remove(ID2);
+            }
         }
     }
 
     public static void setNick(String ID2, String nick) {
-        players.get(ID2).getConfig().set("nick", nick);
+        PlayerStoring player = players.get(ID2);
+        if (player != null) {
+            player.getConfig().set("nick", nick);
+        }
     }
 
     public static void setTheme(String ID2, String theme) {
-        players.get(ID2).getConfig().set("theme", theme);
+        PlayerStoring player = players.get(ID2);
+        if (player != null) {
+            player.getConfig().set("theme", theme);
+        }
     }
 
     public static void addTheme(String ID2, String theme) {
+        PlayerStoring player = players.get(ID2);
+        if (player == null) return;
         Object h2 = Player.getOwnedThemes(ID2);
+        if (h2 == null) h2 = "";
         h2 = (String)h2 + "," + theme;
-        players.get(ID2).getConfig().set("owned-themes", h2);
+        player.getConfig().set("owned-themes", h2);
     }
 
     public static void removeTheme(String ID2, String theme) {
+        PlayerStoring player = players.get(ID2);
+        if (player == null) return;
         String h2 = Player.getOwnedThemes(ID2);
+        if (h2 == null) return;
         h2 = h2.replaceAll("," + theme, "");
-        players.get(ID2).getConfig().set("owned-themes", h2);
+        player.getConfig().set("owned-themes", h2);
     }
 
     public static void updateWS(String ID2, Game game) {
