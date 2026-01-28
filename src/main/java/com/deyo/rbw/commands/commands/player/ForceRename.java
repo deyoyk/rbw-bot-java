@@ -1,6 +1,3 @@
-/*
- * Recoded by deyo 
- */
 package com.deyo.rbw.commands.commands.player;
 
 import java.io.File;
@@ -17,7 +14,7 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 
 public class ForceRename
-implements ServerCommand {
+        implements ServerCommand {
     @Override
     public void doCMD(String[] args2, Guild g2, Member m3, MessageChannelUnion c, CommandAdapter msg, String usage) {
         if (args2.length == 3) {
@@ -37,24 +34,25 @@ implements ServerCommand {
                         }
                         String oldname = Player.getName(target.getId());
                         Player.setName(target.getId(), ign);
-                        BetterEmbed embed = new BetterEmbed("info", "\u270F\uFE0F  Forced Rename", "", "**" + target.getAsMention() + "**: `" + oldname + "` ➜ `" + ign + "`", "");
+                        BetterEmbed embed = new BetterEmbed("info", "\u270F\uFE0F  Forced Rename", "",
+                                "**" + target.getAsMention() + "**: `" + oldname + "` ➜ `" + ign + "`", "");
                         embed.reply(msg);
                         Player.fix(target.getId(), g2);
-                    }
-                    catch (Exception e) {
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                 } else {
                     BetterEmbed.error(Messages.IGN_TOO_LONG).reply(msg);
                 }
             } else {
-                BetterEmbed error = new BetterEmbed("error", "", "", "🚫 That player is not registered. Use `=forceregister` first.", "");
+                BetterEmbed error = new BetterEmbed("error", "", "",
+                        "🚫 That player is not registered. Use `=forceregister` first.", "");
                 error.reply(msg);
             }
         } else {
-            BetterEmbed error = new BetterEmbed("error", "", "", Messages.WRONG_USAGE.get().replaceAll("%usage%", usage), "");
+            BetterEmbed error = new BetterEmbed("error", "", "",
+                    Messages.WRONG_USAGE.get().replaceAll("%usage%", usage), "");
             error.reply(msg);
         }
     }
 }
-

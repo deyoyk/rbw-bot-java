@@ -38,13 +38,14 @@ import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 
 public class Stats
-implements ServerCommand {
+        implements ServerCommand {
     @Override
     public void doCMD(String[] args2, Guild g2, Member m3, MessageChannelUnion c, CommandAdapter msg, String usage) {
         String ID2;
         boolean isFull = false;
         for (String arg : args2) {
-            if (!arg.contains("full") && !arg.contains("--text")) continue;
+            if (!arg.contains("full") && !arg.contains("--text"))
+                continue;
             isFull = true;
             break;
         }
@@ -61,10 +62,40 @@ implements ServerCommand {
             ID2 = member.getId();
         }
         if (isFull || !new File("RBW/themes/default.png").exists()) {
-            BetterEmbed embed = new BetterEmbed("info", "\uD83D\uDCCA  " + Player.getName(ID2) + "'s Stats", "", "", "");
-            embed.addField("__General Stats__", "> `Elo` " + (int)Statistic.ELO.getForPlayer(ID2) + " **(#" + Player.getPlacement(ID2, Statistic.ELO) + ")**\n> \u2517 `Peak` " + (int)Statistic.PEAKELO.getForPlayer(ID2) + " **(#" + Player.getPlacement(ID2, Statistic.PEAKELO) + ")**\n> `Games` " + (int)Statistic.GAMES.getForPlayer(ID2) + " **(#" + Player.getPlacement(ID2, Statistic.GAMES) + ")**\n> `WLR` " + Statistic.WLR.getForPlayer(ID2) + " **(#" + Player.getPlacement(ID2, Statistic.WLR) + ")**\n> `KDR` " + Statistic.KDR.getForPlayer(ID2) + " **(#" + Player.getPlacement(ID2, Statistic.KDR) + ")**\n> `Mvp` " + (int)Statistic.MVP.getForPlayer(ID2) + " **(#" + Player.getPlacement(ID2, Statistic.MVP) + ")**\n> `Strikes` " + (int)Statistic.STRIKES.getForPlayer(ID2) + " **(#" + Player.getPlacement(ID2, Statistic.STRIKES) + ")**\n> `Scored` " + (int)Statistic.SCORED.getForPlayer(ID2) + " **(#" + Player.getPlacement(ID2, Statistic.SCORED) + ")**", false);
-            embed.addField("__Games Stats__", "> **`Wins`** " + (int)Statistic.WIN.getForPlayer(ID2) + " **(#" + Player.getPlacement(ID2, Statistic.WIN) + ")**\n> `Winstreak` " + (int)Statistic.WS.getForPlayer(ID2) + " **(#" + Player.getPlacement(ID2, Statistic.WS) + ")**\n> \u2517 `Highest` " + (int)Statistic.HIGHESTWS.getForPlayer(ID2) + " **(#" + Player.getPlacement(ID2, Statistic.HIGHESTWS) + ")**\n> **`Losses`** " + (int)Statistic.LOSSES.getForPlayer(ID2) + " **(#" + Player.getPlacement(ID2, Statistic.LOSSES) + ")**\n> `Losestreak` " + (int)Statistic.LS.getForPlayer(ID2) + " **(#" + Player.getPlacement(ID2, Statistic.LS) + ")**\n> \u2517 `Highest` " + (int)Statistic.HIGHESTLS.getForPlayer(ID2) + " **(#" + Player.getPlacement(ID2, Statistic.HIGHESTLS) + ")**\n> **`Kills`** " + (int)Statistic.KILLS.getForPlayer(ID2) + " **(#" + Player.getPlacement(ID2, Statistic.KILLS) + ")**\n> **`Deaths`** " + (int)Statistic.DEATHS.getForPlayer(ID2) + " **(#" + Player.getPlacement(ID2, Statistic.DEATHS) + ")**\n> **`Beds`** " + (int)Statistic.BEDS.getForPlayer(ID2) + " **(#" + Player.getPlacement(ID2, Statistic.BEDS) + ")**", false);
-            embed.addField("__Other Stats__", "> `Gold` " + (int)Statistic.GOLD.getForPlayer(ID2) + "\n> `Screenshared` " + (int)Statistic.SCREENSHARED.getForPlayer(ID2) + "\n> `Selected theme` " + Player.getTheme(ID2) + "\n> `Owned themes` " + Player.getOwnedThemes(ID2), false);
+            BetterEmbed embed = new BetterEmbed("info", "\uD83D\uDCCA  " + Player.getName(ID2) + "'s Stats", "", "",
+                    "");
+            embed.addField("__General Stats__", "> `Elo` " + (int) Statistic.ELO.getForPlayer(ID2) + " **(#"
+                    + Player.getPlacement(ID2, Statistic.ELO) + ")**\n> \u2517 `Peak` "
+                    + (int) Statistic.PEAKELO.getForPlayer(ID2) + " **(#" + Player.getPlacement(ID2, Statistic.PEAKELO)
+                    + ")**\n> `Games` " + (int) Statistic.GAMES.getForPlayer(ID2) + " **(#"
+                    + Player.getPlacement(ID2, Statistic.GAMES) + ")**\n> `WLR` " + Statistic.WLR.getForPlayer(ID2)
+                    + " **(#" + Player.getPlacement(ID2, Statistic.WLR) + ")**\n> `KDR` "
+                    + Statistic.KDR.getForPlayer(ID2) + " **(#" + Player.getPlacement(ID2, Statistic.KDR)
+                    + ")**\n> `Mvp` " + (int) Statistic.MVP.getForPlayer(ID2) + " **(#"
+                    + Player.getPlacement(ID2, Statistic.MVP) + ")**\n> `Strikes` "
+                    + (int) Statistic.STRIKES.getForPlayer(ID2) + " **(#" + Player.getPlacement(ID2, Statistic.STRIKES)
+                    + ")**\n> `Scored` " + (int) Statistic.SCORED.getForPlayer(ID2) + " **(#"
+                    + Player.getPlacement(ID2, Statistic.SCORED) + ")**", false);
+            embed.addField("__Games Stats__", "> **`Wins`** " + (int) Statistic.WIN.getForPlayer(ID2) + " **(#"
+                    + Player.getPlacement(ID2, Statistic.WIN) + ")**\n> `Winstreak` "
+                    + (int) Statistic.WS.getForPlayer(ID2) + " **(#" + Player.getPlacement(ID2, Statistic.WS)
+                    + ")**\n> \u2517 `Highest` " + (int) Statistic.HIGHESTWS.getForPlayer(ID2) + " **(#"
+                    + Player.getPlacement(ID2, Statistic.HIGHESTWS) + ")**\n> **`Losses`** "
+                    + (int) Statistic.LOSSES.getForPlayer(ID2) + " **(#" + Player.getPlacement(ID2, Statistic.LOSSES)
+                    + ")**\n> `Losestreak` " + (int) Statistic.LS.getForPlayer(ID2) + " **(#"
+                    + Player.getPlacement(ID2, Statistic.LS) + ")**\n> \u2517 `Highest` "
+                    + (int) Statistic.HIGHESTLS.getForPlayer(ID2) + " **(#"
+                    + Player.getPlacement(ID2, Statistic.HIGHESTLS) + ")**\n> **`Kills`** "
+                    + (int) Statistic.KILLS.getForPlayer(ID2) + " **(#" + Player.getPlacement(ID2, Statistic.KILLS)
+                    + ")**\n> **`Deaths`** " + (int) Statistic.DEATHS.getForPlayer(ID2) + " **(#"
+                    + Player.getPlacement(ID2, Statistic.DEATHS) + ")**\n> **`Beds`** "
+                    + (int) Statistic.BEDS.getForPlayer(ID2) + " **(#" + Player.getPlacement(ID2, Statistic.BEDS)
+                    + ")**", false);
+            embed.addField("__Other Stats__",
+                    "> `Gold` " + (int) Statistic.GOLD.getForPlayer(ID2) + "\n> `Screenshared` "
+                            + (int) Statistic.SCREENSHARED.getForPlayer(ID2) + "\n> `Selected theme` "
+                            + Player.getTheme(ID2) + "\n> `Owned themes` " + Player.getOwnedThemes(ID2),
+                    false);
             embed.reply(msg);
         } else {
             try {
@@ -86,19 +117,20 @@ implements ServerCommand {
                 } else {
                     PlayerUUID = Utils.getUUID(Player.getName(ID2));
                 }
-                URL url = new URL("https://visage.surgeplay.com/full/" + theme.getConfig().getString("skin-size") + "/" + PlayerUUID);
-                HttpURLConnection connection = (HttpURLConnection)url.openConnection();
+                URL url = new URL("https://visage.surgeplay.com/full/" + theme.getConfig().getString("skin-size") + "/"
+                        + PlayerUUID);
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                 connection.setRequestProperty("User-Agent", "RankedBot/1.0 (+https://github.com/SSRequest/RankedBot)");
                 try {
                     skin = ImageIO.read(connection.getInputStream());
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     e.printStackTrace();
-                    BetterEmbed embed = new BetterEmbed("error", "", "", "⚠️ Something went wrong. Please try again.", "");
+                    BetterEmbed embed = new BetterEmbed("error", "", "", "⚠️ Something went wrong. Please try again.",
+                            "");
                     embed.reply(msg);
                     return;
                 }
-                Graphics2D gfx = (Graphics2D)image.getGraphics();
+                Graphics2D gfx = (Graphics2D) image.getGraphics();
                 Color black = Color.black;
                 gfx.setBackground(black);
                 gfx.setColor(black);
@@ -109,22 +141,22 @@ implements ServerCommand {
                 Role r = null;
                 try {
                     r = g2.getRoleById(playerRank.getId());
-                }
-                catch (Exception exception) {
+                } catch (Exception exception) {
                     // empty catch block
                 }
                 Color rankColor = r == null ? Color.WHITE : r.getColor();
                 String rate = String.valueOf(Statistic.getPercentage(ID2));
                 for (Statistic value : Statistic.values()) {
                     String statPath = value.getPath();
-                    if (!theme.getConfig().isSet(statPath + "-pixels")) continue;
+                    if (!theme.getConfig().isSet(statPath + "-pixels"))
+                        continue;
                     Integer[] array2 = this.getArray(theme.getConfig().getString(statPath + "-pixels"));
-                    String str = String.valueOf((int)value.getForPlayer(ID2));
+                    String str = String.valueOf((int) value.getForPlayer(ID2));
                     if (value == Statistic.WLR || value == Statistic.KDR) {
                         str = String.valueOf(value.getForPlayer(ID2));
                     }
-                    if (theme.getThemeFormats().containsKey((Object)value)) {
-                        Themes.ThemeFormat format = theme.getThemeFormats().get((Object)value);
+                    if (theme.getThemeFormats().containsKey((Object) value)) {
+                        Themes.ThemeFormat format = theme.getThemeFormats().get((Object) value);
                         str = format.format.replaceAll("%v", str).replaceAll("%rate%", rate + "%");
                         gfx.setColor(format.color);
                         gfx.setFont(new Font("Minecraft", 0, format.fontsize));
@@ -135,7 +167,7 @@ implements ServerCommand {
                             array2[0] = array2[0] + variation2 * (str.length() - 1);
                         }
                     }
-                    gfx.drawString(str, (int)array2[0], (int)array2[1]);
+                    gfx.drawString(str, (int) array2[0], (int) array2[1]);
                 }
                 if (theme.getConfig().isSet("placement-pixels")) {
                     String placement;
@@ -149,7 +181,7 @@ implements ServerCommand {
                     }
                     gfx.setFont(normal);
                     gfx.setColor(black);
-                    gfx.drawString(placement, (int)xys[0], (int)xys[1]);
+                    gfx.drawString(placement, (int) xys[0], (int) xys[1]);
                 }
                 if (theme.getConfig().isSet("recentgames-pixels")) {
                     array = this.getArray(theme.getConfig().getString("recentgames-pixels"));
@@ -162,7 +194,10 @@ implements ServerCommand {
                     int x = array[0];
                     for (Game playerGame : playerGames) {
                         String str = "#" + playerGame.gamenumber;
-                        Color color = playerGame.getState() == GameState.SCORED ? (playerGame.getTeam(playerGame.getWinnerteam()).contains(ID2) ? new Color(18, 204, 11) : new Color(211, 6, 6)) : new Color(0, 0, 0);
+                        Color color = playerGame.getState() == GameState.SCORED
+                                ? (playerGame.getTeam(playerGame.getWinnerteam()).contains(ID2) ? new Color(18, 204, 11)
+                                        : new Color(211, 6, 6))
+                                : new Color(0, 0, 0);
                         gfx.setColor(color);
                         gfx.drawString(str, x, y);
                         y += variation;
@@ -187,22 +222,21 @@ implements ServerCommand {
                     gfx.setColor(rankColor);
                     Integer[] rankPixels = this.getArray(theme.getConfig().getString("rank-pixels"));
                     String rank = r.getName();
-                    gfx.drawString(rank, (int)rankPixels[0], (int)rankPixels[1]);
+                    gfx.drawString(rank, (int) rankPixels[0], (int) rankPixels[1]);
                 }
                 if (theme.getConfig().isSet("rankimage-pixels") && playerRank != null && playerRank.rankImage != null) {
                     array = this.getArray(theme.getConfig().getString("rankimage-pixels"));
-                    gfx.drawImage(playerRank.rankImage, array[0], (int)array[1], null);
+                    gfx.drawImage(playerRank.rankImage, array[0], (int) array[1], null);
                 }
                 if (theme.getConfig().isSet("skin-pixels")) {
                     Integer[] skinArray = this.getArray(theme.getConfig().getString("skin-pixels"));
-                    gfx.drawImage((Image)skin, skinArray[0], (int)skinArray[1], null);
+                    gfx.drawImage((Image) skin, skinArray[0], (int) skinArray[1], null);
                 }
                 gfx.dispose();
                 ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                ImageIO.write((RenderedImage)image, "png", stream);
+                ImageIO.write((RenderedImage) image, "png", stream);
                 BetterEmbed.replyStats(stream.toByteArray(), Player.getName(ID2) + ".png", msg);
-            }
-            catch (IOException ex) {
+            } catch (IOException ex) {
                 ex.printStackTrace();
             }
         }
@@ -216,4 +250,3 @@ implements ServerCommand {
         return ints.toArray(new Integer[0]);
     }
 }
-

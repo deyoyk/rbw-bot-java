@@ -40,9 +40,10 @@ import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 
 public class LeaderBoard
-implements ServerCommand {
+        implements ServerCommand {
     @Override
-    public void doCMD(String[] args2, Guild g2, Member m3, MessageChannelUnion c, CommandAdapter msg, String usage) throws IOException {
+    public void doCMD(String[] args2, Guild g2, Member m3, MessageChannelUnion c, CommandAdapter msg, String usage)
+            throws IOException {
         if (args2.length <= 3) {
             HashMap<String, Double> unsortedMap = new HashMap<String, Double>();
             String stat = args2.length > 1 ? args2[1] : "elo";
@@ -53,18 +54,23 @@ implements ServerCommand {
                 int maxv = Statistic.values().length - 1;
                 for (int i = 0; i < Statistic.values().length; ++i) {
                     Statistic value = Statistic.values()[i];
-                    s2 = i == maxv ? (String)s2 + "`" + value.getPath() + "`" : (String)s2 + "`" + value.getPath() + "`/";
+                    s2 = i == maxv ? (String) s2 + "`" + value.getPath() + "`"
+                            : (String) s2 + "`" + value.getPath() + "`/";
                 }
-                BetterEmbed error = new BetterEmbed("error", "", "", "🚫 Unknown statistic. Valid options: " + (String)s2, "");
+                BetterEmbed error = new BetterEmbed("error", "", "",
+                        "🚫 Unknown statistic. Valid options: " + (String) s2, "");
                 error.reply(msg);
                 return;
             }
-            DecimalFormat formatter = statistic == Statistic.WLR || statistic == Statistic.KDR ? new DecimalFormat("#0.00") : new DecimalFormat("#0");
+            DecimalFormat formatter = statistic == Statistic.WLR || statistic == Statistic.KDR
+                    ? new DecimalFormat("#0.00")
+                    : new DecimalFormat("#0");
             for (String ID2 : Player.getPlayers().keySet()) {
                 unsortedMap.put(ID2, statistic.getForPlayer(ID2));
             }
             Map<String, Double> sortedMap = Utils.sortByValue(unsortedMap);
-            LinkedList<Map.Entry<String, Double>> list = new LinkedList<Map.Entry<String, Double>>(sortedMap.entrySet());
+            LinkedList<Map.Entry<String, Double>> list = new LinkedList<Map.Entry<String, Double>>(
+                    sortedMap.entrySet());
             if (page * 10 > list.size() + 10 || page == 0) {
                 BetterEmbed embed = new BetterEmbed("error", "", "", "🚫 That page doesn’t exist.", "");
                 embed.reply(msg);
@@ -73,20 +79,22 @@ implements ServerCommand {
             File lbImage = new File("RBW/leaderboard.png");
             if (statistic == Statistic.ELO && lbImage.exists()) {
                 BufferedImage lb = ImageIO.read(lbImage);
-                Graphics2D gfx = (Graphics2D)lb.getGraphics();
+                Graphics2D gfx = (Graphics2D) lb.getGraphics();
                 gfx.setBackground(Color.BLACK);
                 gfx.setColor(Color.BLACK);
                 gfx.setFont(new Font("Minecraft", 0, Config.getConfig().getInt("lb-fontsize")));
                 for (int i = page - 1; i < 10; ++i) {
                     String PlayerUUID;
-                    if (i >= list.size()) continue;
-                    String[] values2 = ((Map.Entry)list.get(i)).toString().split("=");
+                    if (i >= list.size())
+                        continue;
+                    String[] values2 = ((Map.Entry) list.get(i)).toString().split("=");
                     String ID3 = values2[0];
                     int yvar = Config.getConfig().getInt("lb-y-variation");
                     gfx.setColor(new Color(204, 122, 0, 255));
                     for (Statistic value : Statistic.values()) {
-                        if (!Config.getConfig().isSet("lb-" + value.getPath() + "-pixels")) continue;
-                        String str = String.valueOf((int)value.getForPlayer(ID3));
+                        if (!Config.getConfig().isSet("lb-" + value.getPath() + "-pixels"))
+                            continue;
+                        String str = String.valueOf((int) value.getForPlayer(ID3));
                         if (value == Statistic.WLR) {
                             str = String.valueOf(value.getForPlayer(ID3));
                         }
@@ -100,8 +108,7 @@ implements ServerCommand {
                     Role r = null;
                     try {
                         r = g2.getRoleById(playerRank.getId());
-                    }
-                    catch (Exception exception) {
+                    } catch (Exception exception) {
                         // empty catch block
                     }
                     Color rankColor = r == null ? Color.WHITE : r.getColor();
@@ -113,7 +120,8 @@ implements ServerCommand {
                         int namepixelsY = namePixels[1] + yvar * (i + 1);
                         gfx.drawString(ign, namepixelsX, namepixelsY);
                     }
-                    if (!Config.getConfig().isSet("lb-face-pixels")) continue;
+                    if (!Config.getConfig().isSet("lb-face-pixels"))
+                        continue;
                     Integer[] facePixels = this.getArray(Config.getConfig().getString("lb-face-pixels"));
                     if (Main.lessCpu) {
                         if (Player.getPlayersCache().containsKey(ID3)) {
@@ -126,29 +134,44 @@ implements ServerCommand {
                     } else {
                         PlayerUUID = Utils.getUUID(Player.getName(ID3));
                     }
-                    BufferedImage face = ImageIO.read(new URL("https://visage.surgeplay.com/face/" + Config.getValue("lb-face-size") + "/" + PlayerUUID).openStream());
+                    BufferedImage face = ImageIO.read(new URL(
+                            "https://visage.surgeplay.com/face/" + Config.getValue("lb-face-size") + "/" + PlayerUUID)
+                            .openStream());
                     int x = facePixels[0];
                     int y = facePixels[1] + yvar * (i + 1);
-                    gfx.drawImage((Image)face, x, y, null);
+                    gfx.drawImage((Image) face, x, y, null);
                 }
                 gfx.dispose();
                 ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                ImageIO.write((RenderedImage)lb, "png", stream);
+                ImageIO.write((RenderedImage) lb, "png", stream);
                 BetterEmbed.replyStats(stream.toByteArray(), Player.getName(m3.getId()) + ".png", msg);
             } else {
                 Object lb = "";
                 for (int i = (page - 1) * 10; i < page * 10; ++i) {
-                    if (i >= list.size()) continue;
-                    String[] values3 = ((Map.Entry)list.get(i)).toString().split("=");
+                    if (i >= list.size())
+                        continue;
+                    String[] values3 = ((Map.Entry) list.get(i)).toString().split("=");
                     int place = i + 1;
                     String ign = Player.getName(values3[0]);
-                    lb = place == 1 ? (String)lb + ":first_place: `" + ign + "` \u2014 " + formatter.format(Double.parseDouble(values3[1])) + "\n" : (place == 2 ? (String)lb + ":second_place: `" + ign + "` \u2014 " + formatter.format(Double.parseDouble(values3[1])) + "\n" : (place == 3 ? (String)lb + ":third_place: `" + ign + "` \u2014 " + formatter.format(Double.parseDouble(values3[1])) + "\n" : (String)lb + "**#" + place + "** `" + ign + "` \u2014 " + formatter.format(Double.parseDouble(values3[1])) + "\n"));
+                    lb = place == 1
+                            ? (String) lb + ":first_place: `" + ign + "` \u2014 "
+                                    + formatter.format(Double.parseDouble(values3[1])) + "\n"
+                            : (place == 2
+                                    ? (String) lb + ":second_place: `" + ign + "` \u2014 "
+                                            + formatter.format(Double.parseDouble(values3[1])) + "\n"
+                                    : (place == 3
+                                            ? (String) lb + ":third_place: `" + ign + "` \u2014 "
+                                                    + formatter.format(Double.parseDouble(values3[1])) + "\n"
+                                            : (String) lb + "**#" + place + "** `" + ign + "` \u2014 "
+                                                    + formatter.format(Double.parseDouble(values3[1])) + "\n"));
                 }
-                BetterEmbed embed = new BetterEmbed("info", "\uD83C\uDFC6  " + Utils.formatName(stat) + " Leaderboard", "", (String)lb, "Page **" + page + "**");
+                BetterEmbed embed = new BetterEmbed("info", "\uD83C\uDFC6  " + Utils.formatName(stat) + " Leaderboard",
+                        "", (String) lb, "Page" + page);
                 embed.replyWithButtons(LeaderBoard.buttons(m3.getId()), msg);
             }
         } else {
-            BetterEmbed error = new BetterEmbed("error", "", "", Messages.WRONG_USAGE.get().replaceAll("%usage%", usage), "");
+            BetterEmbed error = new BetterEmbed("error", "", "",
+                    Messages.WRONG_USAGE.get().replaceAll("%usage%", usage), "");
             error.reply(msg);
         }
     }
@@ -168,4 +191,3 @@ implements ServerCommand {
         return ints.toArray(new Integer[0]);
     }
 }
-
