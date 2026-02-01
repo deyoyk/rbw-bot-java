@@ -24,8 +24,8 @@ public class Help
 
                 BetterEmbed embed = new BetterEmbed("info", "\uD83D\uDCDD  ASRBW Bot Help",
                                 guild.getIconUrl() == null ? "" : guild.getIconUrl(),
-                                "Choose a category below to view its commands. \n \n * **Made by - Dreamrela** \n * **Designed by Veysure & EsDeeBot**",
-                                "Made by - ASRBW Development Team");
+                                "Choose a category below to view its commands. \n \n * **Made by - Dreamrela & Deyo**",
+                                "Made by - 2 Legends");
 
                 // Quick overview fields
 
